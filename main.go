@@ -94,7 +94,7 @@ func (h *handler) OnAnnounce(ctx *gortsplib.ServerHandlerOnAnnounceCtx) (*base.R
 
 	go func(url, file string) {
 		defer h.wg.Done()
-		arg := []string{"ffmpeg", "-i", url, "-c", "copy", "-y", "-f", "flv", file}
+		arg := []string{"ffmpeg", "-i", url, "-c", "copy", "-y", "-f", FORMAT, file}
 		cmd := &exec.Cmd{
 			Args: arg,
 			Path: "/usr/bin/ffmpeg",
@@ -102,10 +102,8 @@ func (h *handler) OnAnnounce(ctx *gortsplib.ServerHandlerOnAnnounceCtx) (*base.R
 				Setpgid: true,
 			},
 		}
-		log.Print(arg)
-		if err := cmd.Run(); err != nil {
-			log.Print(err)
-		}
+		log.Println("EXEC", arg)
+		log.Println("DONE", arg, cmd.Run())
 	}(from, path.Join(h.url, file))
 
 	h.stream = gortsplib.NewServerStream(ctx.Tracks)
@@ -195,8 +193,9 @@ func (h *handler) Wait() {
 //	return &handler{}
 //}
 
-// ffmpeg -re -i /usr/share/help/ru/gnome-help/figures/gnome-windows-and-workspaces.webm -c copy -f rtsp rtsp://127.0.0.1:8554/go
-// ffmpeg -re -i /usr/share/help/ru/gnome-help/figures/display-dual-monitors.webm -c copy -f rtsp rtsp://127.0.0.1:8554/go
+const FORMAT = "flv" // "matroska"
+
+// ffmpeg -i http://playerservices.streamtheworld.com/api/livestream-redirect/KINK.mp3 -c copy -f rtsp rtsp://127.0.0.1:8554/123
 func main() {
 	var graceFullStop bool
 	var urlPrefix string
