@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"path"
 	"sync"
 	"syscall"
 
@@ -104,7 +103,7 @@ func (h *handler) OnAnnounce(ctx *gortsplib.ServerHandlerOnAnnounceCtx) (*base.R
 		}
 		log.Println("EXEC", arg)
 		log.Println("DONE", arg, cmd.Run())
-	}(from, path.Join(h.url, file))
+	}(from, h.url+file)
 
 	h.stream = gortsplib.NewServerStream(ctx.Tracks)
 	h.session = ctx.Session
